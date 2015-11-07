@@ -1,13 +1,7 @@
 require 'sequel'
 require 'pg'
 require 'rest'
-require 'dotenv'
-Dotenv.load
-
-require 'logger'
-DB = Sequel.connect(ENV['DATABASE_URL'], logger: Logger.new(STDOUT))
-DB.timezone = :utc
-Sequel.extension :core_extensions, :migration
+require_relative "./init"
 
 desc 'Get Artsy.net HTML content size'
 task :daily_measure do 
@@ -15,7 +9,6 @@ task :daily_measure do
   content_length = response.headers['content-length']
   measurements_table = DB[:measurements]
   measurements_table.insert(:size => content_length, :created_at => Time.now, :updated_at => Time.now)
-  puts content_length
 end
 
 desc 'Create DB'
